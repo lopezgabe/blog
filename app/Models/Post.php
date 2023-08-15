@@ -13,11 +13,28 @@ class Post extends Model
     protected $with = ['category', 'author'];
 
     public function scopeFilter($query, array $filters) {
-        if ($filters['search'] ?? FALSE) {
+
+        $query->when($filters['search'] ?? FALSE, fn($query, $search) =>
+            $query->where(fn($query) =>
+                $query->where('title', 'like', '%' . request('search') . '%')
+                ->orWhere('body', 'like', '%' . request('search') . '%')
+            )
+        );
+
+        $query->when($filters['category'] ?? FALSE, fn($query, $category) =>
             $query
-                ->where('title', 'like', '%' . request('search') . '%')
-                ->orWhere('body', 'like', '%' . request('search') . '%');
-        }
+                ->whereHas('category', fn($query) =>
+                $query->where('slug', $category)
+                )
+        );
+
+        $query->when($filters['author'] ?? FALSE, fn($query, $category) =>
+            $query
+                ->whereHas('author', fn($query) =>
+                $query->where('username', $category)
+                )
+        );
+
     }
 
     public function category() {
