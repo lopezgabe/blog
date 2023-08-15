@@ -18,8 +18,8 @@ class CategoryFactory extends Factory
     {
 
         return [
-            'name' => $this->faker->word . '-' . rand(1,1000),
-            'slug' => $this->faker->slug
+            'name' => $this->faker->word() . '-' . rand(1,1000),
+            'slug' => $this->faker->slug()
         ];
     }
 }
